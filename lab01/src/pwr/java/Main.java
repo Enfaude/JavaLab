@@ -3,8 +3,15 @@ package pwr.java;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Main class runs sorting methods.
+ */
 public class Main {
 
+    /**
+     * Method prints list of IntElements
+     * @param input list to be printed
+     */
     public static void printIntList(List<IntElement> input) {
         System.out.println("List:");
         for (IElement element : input) {
@@ -14,6 +21,10 @@ public class Main {
         }
     }
 
+    /**
+     * Method prints list of IElements
+     * @param input list to be printed
+     */
     public static void printList(List<IElement> input) {
         System.out.println("List:");
         for (IElement element : input) {
