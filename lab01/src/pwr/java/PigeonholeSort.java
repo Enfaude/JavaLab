@@ -10,7 +10,7 @@ public class PigeonholeSort extends AbstractIntSorter {
     /**
      * Class constructor providing information about the algorithm
      */
-    PigeonholeSort() {
+    public PigeonholeSort() {
         this.description = "PigeonholeSort";
         this.isInSitu = false;
         this.isStable = true;

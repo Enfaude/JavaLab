@@ -11,7 +11,7 @@ public class SelectionSort extends AbstractFloatSorter {
     /**
      * Class constructor providing information about the algorithm
      */
-    SelectionSort() {
+    public SelectionSort() {
         this.description = "SelectionSort";
         this.isInSitu = true;
         this.isStable = false;
@@ -23,7 +23,7 @@ public class SelectionSort extends AbstractFloatSorter {
      * @return sorted list of IElements
      */
     @Override
-    List<IElement> solveIElement(List<IElement> input) {
+    public List<IElement> solveIElement(List<IElement> input) {
         List<IElement> result = new ArrayList<>();
         IElement[] inputData = (IElement[]) input.toArray();
 

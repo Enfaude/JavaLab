@@ -11,7 +11,7 @@ public class QuickSort extends AbstractFloatSorter {
     /**
      * Class constructor providing information about the algorithm
      */
-    QuickSort() {
+    public QuickSort() {
         this.description = "QuickSort";
         this.isInSitu = true;
         this.isStable = false;
@@ -23,7 +23,7 @@ public class QuickSort extends AbstractFloatSorter {
      * @return sorted list
      */
     @Override
-    List<IElement> solveIElement(List<IElement> input) {
+    public List<IElement> solveIElement(List<IElement> input) {
         List<IElement> result = new ArrayList<>();
         IElement[] inputData = (IElement[]) input.toArray();
         quicksort(inputData, 0, inputData.length - 1);

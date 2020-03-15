@@ -48,7 +48,7 @@ public class Main {
         FloatElement flel4 = new FloatElement("flel4", 18.42f);
         FloatElement flel5 = new FloatElement("flel5", 11.11f);
         FloatElement flel6 = new FloatElement("flel6", 1.0f);
-        FloatElement flel7 = new FloatElement("flel7", 1);
+        IntElement flel7 = new IntElement("int1", 1);
 
         List<IntElement> inputIntList = Arrays.asList(intel1, intel2, intel3, intel4, intel5, intel6);
         List<IElement> inputFloatList = Arrays.asList(flel1, flel2, flel3, flel4, flel5, flel6, flel7);
@@ -59,8 +59,11 @@ public class Main {
         List<IElement> resultFloat = quickSort.solveIElement(inputFloatList);
         SelectionSort selectionSort = new SelectionSort();
         List<IElement> resultSelection = selectionSort.solveIElement(inputFloatList);
+
         printIntList(resultInt);
         printList(resultFloat);
         printList(resultSelection);
+
+//        printList(quickSort.solveIElement(inputIntList));
     }
 }

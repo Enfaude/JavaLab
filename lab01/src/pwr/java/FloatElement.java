@@ -36,7 +36,7 @@ public class FloatElement implements IElement {
      * @param name - name of the element
      * @param value - value of the element
      */
-    FloatElement(String name, float value) {
+    public FloatElement(String name, float value) {
         this.name = name;
         this.value = value;
     }

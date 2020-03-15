@@ -36,7 +36,7 @@ public class IntElement implements IElement {
      * @param name - name of the element
      * @param value - value of the element
      */
-    IntElement(String name, int value) {
+    public IntElement(String name, int value) {
         this.name = name;
         this.value = value;
     }
