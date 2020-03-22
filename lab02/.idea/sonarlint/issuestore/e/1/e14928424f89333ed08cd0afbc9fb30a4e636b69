@@ -1,0 +1,9 @@
+
+G
+java:S5411G"*Use the primitive boolean expression here.(…£Ó8«»Ù.
+F
+java:S1940@")Use the opposite operator ("!=") instead.(Ş“ğ×8«»Ù.
+E
+java:S1125G"(Remove the literal "true" boolean value.(…£Ó8«»Ù.
+n
+java:S1128"LRemove this unused import 'jdk.nashorn.internal.runtime.arrays.IntElements'.(¸¤„¶ùÿÿÿÿ8ä®°Ÿ.
