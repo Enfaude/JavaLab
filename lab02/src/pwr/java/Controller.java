@@ -1,20 +1,15 @@
 package pwr.java;
 
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import jdk.nashorn.internal.runtime.arrays.IntElements;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class Controller implements Initializable {
     ObservableList<IElement> contextList = FXCollections.observableArrayList();
@@ -24,10 +19,7 @@ public class Controller implements Initializable {
     ObservableList<String> algAllOptions = FXCollections.observableArrayList(pigeonholeSort.getDescription(), quickSort.getDescription(), selectionSort.getDescription());
     ObservableList<String> algFloatOptions = FXCollections.observableArrayList(quickSort.getDescription(), selectionSort.getDescription());
     Boolean isListInteger = true;
-    Locale localeUK = new Locale("en", "UK");
-    Locale localeUS = new Locale("en", "US");
-    Locale localePL = new Locale("pl", "PL");
-//    ResourceBundle bundle = ResourceBundle.getBundle("texts", localeUK);
+    SimpleDateFormat dateFormat = new SimpleDateFormat(Main.activeBundle.getString("dateFormat"));
 
     @FXML
     ListView<String> listView;
@@ -45,10 +37,19 @@ public class Controller implements Initializable {
     ComboBox algSelect;
     @FXML
     MenuItem menuExit = new MenuItem();
+    @FXML
+    MenuItem menuEnglishUS = new MenuItem();
+    @FXML
+    MenuItem menuEnglishGB = new MenuItem();
+    @FXML
+    MenuItem menuPolish = new MenuItem();
+    @FXML
+    Label dateLabel = new Label();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setAlgOptions();
+        dateLabel.setText(dateFormat.format(new Date()));
     }
 
     void refreshView(List<IElement> input) {
@@ -100,7 +101,5 @@ public class Controller implements Initializable {
     public void exitProgram() {
         Platform.exit();
     }
-
-
 
 }

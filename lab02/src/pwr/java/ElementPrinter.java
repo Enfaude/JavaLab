@@ -3,9 +3,7 @@ package pwr.java;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Observable;
 
 public class ElementPrinter {
     public static void printList(List<IElement> input) {
@@ -28,7 +26,7 @@ public class ElementPrinter {
 
     public static String elementToString(IElement element) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Name: ").append(element.getName()).append(" | Value: ").append(element.getValue());
+        sb.append(Main.activeBundle.getString("nameLabel.text")).append(element.getName()).append(" | ").append(Main.activeBundle.getString("valueLabel.text")).append(element.getValue());
         return sb.toString();
     }
 
