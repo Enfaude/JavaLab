@@ -7,19 +7,21 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 
+import java.io.IOException;
 import java.net.URL;
+import java.text.ChoiceFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Controller implements Initializable {
-    ObservableList<IElement> contextList = FXCollections.observableArrayList();
+    ObservableList<IElement> contextList = Main.contextList;
     PigeonholeSort pigeonholeSort = new PigeonholeSort();
     QuickSort quickSort = new QuickSort();
     SelectionSort selectionSort = new SelectionSort();
     ObservableList<String> algAllOptions = FXCollections.observableArrayList(pigeonholeSort.getDescription(), quickSort.getDescription(), selectionSort.getDescription());
     ObservableList<String> algFloatOptions = FXCollections.observableArrayList(quickSort.getDescription(), selectionSort.getDescription());
     Boolean isListInteger = true;
-    SimpleDateFormat dateFormat = new SimpleDateFormat(Main.activeBundle.getString("dateFormat"));
+    SimpleDateFormat dateFormat = new SimpleDateFormat(Main.defaultBundle.getString("dateFormat"));
 
     @FXML
     ListView<String> listView;
@@ -34,15 +36,11 @@ public class Controller implements Initializable {
     @FXML
     Button clearListBtn = new Button();
     @FXML
-    ComboBox algSelect;
+    ComboBox<String> algSelect;
     @FXML
     MenuItem menuExit = new MenuItem();
     @FXML
-    MenuItem menuEnglishUS = new MenuItem();
-    @FXML
-    MenuItem menuEnglishGB = new MenuItem();
-    @FXML
-    MenuItem menuPolish = new MenuItem();
+    Label countElementsLabel = new Label();
     @FXML
     Label dateLabel = new Label();
 
@@ -50,12 +48,15 @@ public class Controller implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         setAlgOptions();
         dateLabel.setText(dateFormat.format(new Date()));
+        countElementsLabel.setText(contextList.size() + formatCount());
+        refreshView(contextList);
     }
 
-    void refreshView(List<IElement> input) {
+    public void refreshView(List<IElement> input) {
         listView.setItems(ElementPrinter.listToView(input));
         listView.refresh();
         setAlgOptions();
+        countElementsLabel.setText(formatCount());
     }
 
     public void clearContextList() {
@@ -68,14 +69,14 @@ public class Controller implements Initializable {
         float value = Float.parseFloat(valueField.getText());
         contextList.add(new FloatElement(nameField.getText(), value));
         //check if value is integer
-        if (!(value == Math.floor(value))) {
+        if (value != Math.floor(value)) {
             isListInteger = false;
         }
         refreshView(contextList);
     }
 
     public void setAlgOptions() {
-        if (isListInteger == true) {
+        if (isListInteger) {
             algSelect.setItems(algAllOptions);
         } else {
             algSelect.setItems(algFloatOptions);
@@ -100,6 +101,29 @@ public class Controller implements Initializable {
 
     public void exitProgram() {
         Platform.exit();
+    }
+
+    public void switchLocalePL() throws IOException {
+        Locale.setDefault(Main.localePL);
+        Main.refresh();
+    }
+
+    public void switchLocaleENUS() throws IOException {
+        Locale.setDefault(Main.localeUS);
+        Main.refresh();
+    }
+
+    public void switchLocaleENUK() throws IOException {
+        Locale.setDefault(Main.localeUK);
+        Main.refresh();
+    }
+
+    String formatCount() {
+        String[] formats = {Main.defaultBundle.getString("countElementsZero.text"), Main.defaultBundle.getString("countElementsOne.text"),
+                Main.defaultBundle.getString("countElementsFew.text"), Main.defaultBundle.getString("countElementsMore.text")};
+        double[] boundaries = {0, 1, 2, 5};
+        ChoiceFormat format = new ChoiceFormat(boundaries, formats);
+        return contextList.size() + " " + format.format(contextList.size());
     }
 
 }

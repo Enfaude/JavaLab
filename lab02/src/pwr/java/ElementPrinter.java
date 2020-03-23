@@ -26,7 +26,7 @@ public class ElementPrinter {
 
     public static String elementToString(IElement element) {
         StringBuilder sb = new StringBuilder();
-        sb.append(Main.activeBundle.getString("nameLabel.text")).append(element.getName()).append(" | ").append(Main.activeBundle.getString("valueLabel.text")).append(element.getValue());
+        sb.append(Main.defaultBundle.getString("nameLabel.text")).append(element.getName()).append(" | ").append(Main.defaultBundle.getString("valueLabel.text")).append(element.getValue());
         return sb.toString();
     }
 
