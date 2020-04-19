@@ -1,7 +1,0 @@
-
-E
-java:S1125N"(Remove the literal "true" boolean value.(…£Ó8Ê„–£.
-G
-java:S5411N"*Use the primitive boolean expression here.(…£Ó8Ê„–£.
-F
-java:S1940G")Use the opposite operator ("!=") instead.(Ş“ğ×8Ê„–£.
