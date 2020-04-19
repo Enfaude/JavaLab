@@ -1,5 +1,6 @@
 package pwr.java;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class SolverThread extends Thread {
 
     SolverThread(String name) {
         rand = new Random();
-        seed = rand.nextLong()%10;
+        seed = rand.nextLong()%50;
         rand.setSeed(seed);
         this.name = name;
         System.out.println(name + "'s seed is: " + seed);
@@ -26,8 +27,12 @@ public class SolverThread extends Thread {
     public void run() {
         System.out.println("Running thread " + getThreadName());
         if(!cache.isSeedAlreadyUsed(seed)) {
-            List algList = maintainer.getFoundClasses();
-
+            List algList = new ArrayList();
+            try {
+                algList = maintainer.findClasses();
+            } catch (ClassNotFoundException | IOException e) {
+                e.printStackTrace();
+            }
             if (algList.size() > 0) {
                 System.out.println(getThreadName() + " found sorting algorithms");
                 List sortingData = generateSortingData();
@@ -64,25 +69,21 @@ public class SolverThread extends Thread {
                     e.printStackTrace();
                 }
             }
-
         } else {
             System.out.println(this.name + "'s seed was already used to sort data");
         }
 
-        //'randomly' generated report
-        if (getSeed()%2 == 0) {
-            maintainer.report();
-        }
+        generateReport();
         System.out.println("Closing thread " + this.name);
     }
 
     private List generateSortingData() {
-        int size = rand.nextInt(50) + 1;
+        int size = rand.nextInt(100) + 1;
         List<IElement> sortingData = new ArrayList();
         System.out.println(getThreadName() + " generates data to sort");
 
         for (int i = 0; i < size; i++) {
-            IntElement el = new IntElement("element " + i + " in thread " + getThreadName(), rand.nextInt(1000));
+            IntElement el = new IntElement("element " + i + " in thread " + getThreadName(), rand.nextInt(1000000));
             sortingData.add(el);
         }
         return sortingData;
@@ -93,7 +94,7 @@ public class SolverThread extends Thread {
     }
 
     public String getThreadName() {
-        return name;
+        return name + "(seed: " + getSeed() + ") ";
     }
 
     public static synchronized void printList(List<IElement> input) {
@@ -102,6 +103,13 @@ public class SolverThread extends Thread {
             StringBuilder sb = new StringBuilder();
             sb.append("Name: ").append(element.getName()).append(" | Value: ").append(element.getValue());
             System.out.println(sb);
+        }
+    }
+
+    public synchronized void generateReport() {
+        //'randomly' generated report
+        if (getSeed()%10 == 0) {
+            maintainer.report();
         }
     }
 }

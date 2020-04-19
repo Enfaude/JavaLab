@@ -15,16 +15,30 @@ public class Maintainer extends Thread {
         foundClasses = findClasses();
     }
 
+    private int reportsCount = 0;
+
+    private synchronized void incrementReportsCount() {
+        reportsCount++;
+    }
+
+    public int getReportsCount() {
+        return reportsCount;
+    }
+
     public synchronized void report() {
         synchronized (System.out) {
             System.out.println("**********   REPORT   **********");
             System.out.println("Total cache calls: " + cache.getAllCallsCount());
             System.out.println("Total failed cache calls: " + cache.getFailedCallsCount());
-            System.out.println("Total cache calls since last report: " + cache.getAllCallsSinceLastReportCount());
-            System.out.println("Total failed cache calls since last report: " + cache.getFailedCallsSinceLastReportCount());
+            System.out.println("Total fails percentage: " + ((float)cache.getFailedCallsCount()/(float)cache.getAllCallsCount())*100);
+            System.out.println("Cache calls since last report: " + cache.getAllCallsSinceLastReportCount());
+            System.out.println("Failed cache calls since last report: " + cache.getFailedCallsSinceLastReportCount());
+            System.out.println("Fails since last report percentage: " + ((float)cache.getFailedCallsSinceLastReportCount()/(float)cache.getAllCallsSinceLastReportCount())*100);
+
             System.out.println("**********   END OF REPORT   **********");
         }
         cache.nullLastReportCounters();
+        incrementReportsCount();
     }
 
     public List getFoundClasses() {
@@ -39,7 +53,7 @@ public class Maintainer extends Thread {
         }
     }
 
-    private synchronized List findClasses() throws ClassNotFoundException, IOException {
+    public synchronized List findClasses() throws ClassNotFoundException, IOException {
         File classesDir = new File(".\\classes");
         File packageDir = new File(".\\classes\\pwr\\java");
         URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{classesDir.toURI().toURL()});
@@ -50,13 +64,11 @@ public class Maintainer extends Thread {
             return classes;
         }
 
-        System.out.println("Found classes:");
         for (File file : packageDir.listFiles()) {
-            Class c = urlClassLoader.loadClass(packageName + "." + file.getName().substring(0, file.getName().length() - 6));
             if(file.getName().endsWith("Sort.class")) {
+                Class c = urlClassLoader.loadClass(packageName + "." + file.getName().substring(0, file.getName().length() - 6));
                 classes.add(c);
             }
-            System.out.println(c.toString());
         }
 
         urlClassLoader.close();

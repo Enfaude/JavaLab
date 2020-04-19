@@ -10,7 +10,6 @@ public class App extends Thread
     public Thread mainThread = currentThread();
     public static Cache cacheData = new Cache();
     public static Maintainer maintainer;
-    public static List foundClasses;
 
     static {
         try {
@@ -22,9 +21,9 @@ public class App extends Thread
 
 
     public static void main( String[] args ) throws InterruptedException {
-
+        sleep(5000);
         Random rand = new Random();
-        int threadsCount = rand.nextInt(50) + 1;
+        int threadsCount = rand.nextInt(1000) + 1;
         List<SolverThread> threads = new ArrayList<>();
         for (int i = 0; i <threadsCount; i++) {
             SolverThread thread = new SolverThread("solver " + i);
@@ -32,14 +31,15 @@ public class App extends Thread
             thread.start();
         }
 
-        foundClasses = maintainer.getFoundClasses();
-        maintainer.printAlgorithmsInfo();
         maintainer.report();
+        maintainer.printAlgorithmsInfo();
 
         for (SolverThread thread : threads) {
             thread.join();
         }
 
         maintainer.report();
+        System.out.println("Number of threads: " + threadsCount);
+        System.out.println("Number of generated reports: " + maintainer.getReportsCount());
     }
 }
