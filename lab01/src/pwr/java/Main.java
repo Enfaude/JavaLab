@@ -59,10 +59,10 @@ public class Main {
         List<IElement> resultFloat = quickSort.solveIElement(inputFloatList);
         SelectionSort selectionSort = new SelectionSort();
         List<IElement> resultSelection = selectionSort.solveIElement(inputFloatList);
-
         printIntList(resultInt);
         printList(resultFloat);
         printList(resultSelection);
+
 
 //        printList(quickSort.solveIElement(inputIntList));
     }

@@ -16,4 +16,6 @@ public interface IElement {
      * @return value of the element
      */
     float getValue();
+
+
 }

@@ -12,7 +12,7 @@ public abstract class AbstractFloatSorter extends AbstractIntSorter {
      * @param input - list of IElements to sort
      * @return sorted list of IELements
      */
-    abstract List<IElement> solveIElement(List<IElement> input);
+    public abstract List<IElement> solveIElement(List<IElement> input);
 
     /**
      * Swaps location of IElements in array
@@ -33,7 +33,7 @@ public abstract class AbstractFloatSorter extends AbstractIntSorter {
      * @param input - list of IElements to find the lowest valued element
      * @return the IElement holding the lowest value in provided list
      */
-    IElement getMinElement(List<IElement> input) {
+    public IElement getMinElement(List<IElement> input) {
         IElement min = input.get(0);
         for (IElement element : input) {
             if (element.getValue() < min.getValue()) {
@@ -49,7 +49,7 @@ public abstract class AbstractFloatSorter extends AbstractIntSorter {
      * @param input - list of IElements to find the highest valued element
      * @return the IElement holding the highest value in provided list
      */
-    IElement getMaxElement(List<IElement> input) {
+    public IElement getMaxElement(List<IElement> input) {
         IElement max = input.get(0);
         for (IElement element : input) {
             if (element.getValue() > max.getValue()) {
@@ -65,7 +65,7 @@ public abstract class AbstractFloatSorter extends AbstractIntSorter {
      * @return
      */
     @Override
-    List<IntElement> solve(List<IntElement> input) {
+    public List<IntElement> solve(List<IntElement> input) {
         return null;
     }
 

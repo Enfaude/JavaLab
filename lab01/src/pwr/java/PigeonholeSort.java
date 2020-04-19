@@ -22,7 +22,7 @@ public class PigeonholeSort extends AbstractIntSorter {
      * @return list sorted by pigeonhole algorithm
      */
     @Override
-    List<IntElement> solve(List<IntElement> input) {
+    public List<IntElement> solve(List<IntElement> input) {
         List<IntElement> result = new ArrayList<>();
         int minIndex = getMinValue(input);
         int maxIndex = getMaxValue(input);

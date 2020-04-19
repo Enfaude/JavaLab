@@ -25,7 +25,7 @@ public class QuickSort extends AbstractFloatSorter {
     @Override
     public List<IElement> solveIElement(List<IElement> input) {
         List<IElement> result = new ArrayList<>();
-        IElement[] inputData = (IElement[]) input.toArray();
+        IElement[] inputData = input.toArray(new IElement[input.size()]);
         quicksort(inputData, 0, inputData.length - 1);
 
         Collections.addAll(result, inputData);

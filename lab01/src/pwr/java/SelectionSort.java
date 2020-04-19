@@ -25,7 +25,7 @@ public class SelectionSort extends AbstractFloatSorter {
     @Override
     public List<IElement> solveIElement(List<IElement> input) {
         List<IElement> result = new ArrayList<>();
-        IElement[] inputData = (IElement[]) input.toArray();
+        IElement[] inputData = input.toArray(new IElement[input.size()]);
 
         for (int i = 0; i < inputData.length - 1; i++) {
             int minIndex = i;

@@ -24,13 +24,13 @@ public abstract class AbstractIntSorter {
      * @param input - list of IntElements to sort
      * @return sorted list of IntElements
      */
-    abstract List<IntElement> solve(List<IntElement> input);
+    public abstract List<IntElement> solve(List<IntElement> input);
 
     /**
      * description getter
      * @return description
      */
-    String getDescription() {
+    public String getDescription() {
         return description;
     }
 
@@ -38,7 +38,7 @@ public abstract class AbstractIntSorter {
      * isStable getter
      * @return is algorithm stable
      */
-    Boolean isStable() {
+    public Boolean isStable() {
         return isStable;
     }
 
@@ -46,7 +46,7 @@ public abstract class AbstractIntSorter {
      * isInSitu getter
      * @return is algorithm inSitu
      */
-    Boolean isInSitu() {
+    public Boolean isInSitu() {
         return isInSitu;
     }
 
@@ -55,7 +55,7 @@ public abstract class AbstractIntSorter {
      * @param input - list of IntElements to find the highest value
      * @return the highest value in provided list
      */
-    int getMaxValue(List<IntElement> input) {
+    public int getMaxValue(List<IntElement> input) {
         int max = Integer.MIN_VALUE;
         for (IntElement element : input) {
             if (element.getValue() > max) {
@@ -70,7 +70,7 @@ public abstract class AbstractIntSorter {
      * @param input - list of IntElements to find the lowest value
      * @return the lowest value in provided list
      */
-    int getMinValue(List<IntElement> input) {
+    public int getMinValue(List<IntElement> input) {
         int min = Integer.MAX_VALUE;
         for (IntElement element : input) {
             if (element.getValue() < min) {
