@@ -21,9 +21,9 @@ public class App extends Thread
 
 
     public static void main( String[] args ) throws InterruptedException {
-        sleep(5000);
+//        sleep(5000);
         Random rand = new Random();
-        int threadsCount = rand.nextInt(1000) + 1;
+        int threadsCount = rand.nextInt(10) + 20;
         List<SolverThread> threads = new ArrayList<>();
         for (int i = 0; i <threadsCount; i++) {
             SolverThread thread = new SolverThread("solver " + i);

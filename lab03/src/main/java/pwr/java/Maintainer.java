@@ -5,10 +5,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.List;
 
-public class Maintainer extends Thread {
-    List foundClasses;
+public class Maintainer {
+    ArrayList foundClasses;
     Cache cache = App.cacheData;
 
     public Maintainer() throws ClassNotFoundException, IOException {
@@ -34,14 +33,13 @@ public class Maintainer extends Thread {
             System.out.println("Cache calls since last report: " + cache.getAllCallsSinceLastReportCount());
             System.out.println("Failed cache calls since last report: " + cache.getFailedCallsSinceLastReportCount());
             System.out.println("Fails since last report percentage: " + ((float)cache.getFailedCallsSinceLastReportCount()/(float)cache.getAllCallsSinceLastReportCount())*100);
-
             System.out.println("**********   END OF REPORT   **********");
         }
         cache.nullLastReportCounters();
         incrementReportsCount();
     }
 
-    public List getFoundClasses() {
+    public ArrayList getFoundClasses() {
         return foundClasses;
     }
 
@@ -53,13 +51,13 @@ public class Maintainer extends Thread {
         }
     }
 
-    public synchronized List findClasses() throws ClassNotFoundException, IOException {
+    public synchronized ArrayList findClasses() throws ClassNotFoundException, IOException {
         File classesDir = new File(".\\classes");
         File packageDir = new File(".\\classes\\pwr\\java");
         URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{classesDir.toURI().toURL()});
 
         String packageName = "pwr.java";
-        List classes = new ArrayList();
+        ArrayList classes = new ArrayList();
         if (!packageDir.exists()) {
             return classes;
         }
@@ -73,10 +71,10 @@ public class Maintainer extends Thread {
 
         urlClassLoader.close();
 
-        System.out.println("Found sorting classes:");
-        for (Object c : classes) {
-            System.out.println(c.toString());
-        }
+//        System.out.println("Found sorting classes:");
+//        for (Object c : classes) {
+//            System.out.println(c.toString());
+//        }
 
         return classes;
     }
