@@ -1,6 +1,7 @@
 package pwr.java;
 
 import java.io.IOException;
+import java.lang.ref.SoftReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -12,8 +13,9 @@ public class SolverThread extends Thread {
     long seed;
     String name;
     Cache cache = App.cacheData;
-    List resultList = new ArrayList();
     Maintainer maintainer = App.maintainer;
+    SoftReference<ArrayList> resultList = null;
+
 
     SolverThread(String name) {
         rand = new Random();
@@ -45,12 +47,12 @@ public class SolverThread extends Thread {
                 try {
                     System.out.println(getThreadName() + " begins sorting with: " + c.getSimpleName());
                     Method methodSolve = c.getDeclaredMethod("solveIElement", List.class);
-                    resultList = (ArrayList) methodSolve.invoke(c.newInstance(), sortingData);
+                    resultList = new SoftReference<>((ArrayList)methodSolve.invoke(c.newInstance(), sortingData));
                     System.out.println(getThreadName() + " finished sorting");
                 } catch (NoSuchMethodException e) {
                     try {
                         Method methodSolve = c.getDeclaredMethod("solve", List.class);
-                        resultList = (ArrayList) methodSolve.invoke(c.newInstance(), sortingData);
+                        resultList = new SoftReference<>((ArrayList)methodSolve.invoke(c.newInstance(), sortingData));
                     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException ex) {
                         ex.printStackTrace();
                     }
@@ -58,7 +60,7 @@ public class SolverThread extends Thread {
                 } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
                     e.printStackTrace();
                 }
-                printList(resultList);
+                printList(resultList.get());
                 System.out.println(getThreadName() + " adds result to cache");
                 cache.addNewResult(seed, resultList);
             } else {
@@ -83,7 +85,7 @@ public class SolverThread extends Thread {
         System.out.println(getThreadName() + " generates data to sort");
 
         for (int i = 0; i < size; i++) {
-            IntElement el = new IntElement("element " + i + " in thread " + getThreadName(), rand.nextInt(1000000));
+            IntElement el = new IntElement("element " + i + " in thread " + getThreadName(), rand.nextInt(10000));
             sortingData.add(el);
         }
         return sortingData;

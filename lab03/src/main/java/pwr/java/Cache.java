@@ -1,5 +1,7 @@
 package pwr.java;
 
+import java.lang.ref.SoftReference;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -10,9 +12,9 @@ public class Cache {
     int failedCallsCount = 0;
     int failedCallsSinceLastReportCount = 0;
 
-    public synchronized void addNewResult(long seed, List resultList) {
+    public synchronized void addNewResult(long seed, SoftReference<ArrayList> resultList) {
         if(!isSeedAlreadyUsed(seed)) {
-            data.put(seed, resultList);
+            data.put(seed, resultList.get());
             incrementCallsCounter();
             System.out.println("Data with seed " + seed + " have been successfully added to cache");
         } else {
