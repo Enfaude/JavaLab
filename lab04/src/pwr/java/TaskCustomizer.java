@@ -27,7 +27,6 @@ public class TaskCustomizer extends JPanel implements Customizer{
 	private PropertyChangeSupport support = new PropertyChangeSupport(this);
 	private VetoableChangeSupport veto = new VetoableChangeSupport(this);
 	
-	
 	JTextField titleField;
 	JFormattedTextField priorityField;
 	JColorChooser colorChooser;
@@ -48,22 +47,18 @@ public class TaskCustomizer extends JPanel implements Customizer{
 			public void removeUpdate(DocumentEvent e) {
 				String txt = titleField.getText();
 				task.setTitle(txt);
-				support.firePropertyChange("", null, null);
 			}
 			
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				String txt = titleField.getText();
-				task.setTitle(txt);
-				support.firePropertyChange("", null, null);
-				
+				task.setTitle(txt);			
 			}
 			
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				String txt = titleField.getText();
 				task.setTitle(txt);
-				support.firePropertyChange("", null, null);				
 			}
 		});
 		
@@ -80,7 +75,6 @@ public class TaskCustomizer extends JPanel implements Customizer{
 					e1.printStackTrace();
 					System.out.println("Wrong priority value!");
 				}
-				support.firePropertyChange("", null, null);
 			}
 			
 			@Override
@@ -91,7 +85,6 @@ public class TaskCustomizer extends JPanel implements Customizer{
 					e1.printStackTrace();
 					System.out.println("Wrong priority value!");
 				}
-				support.firePropertyChange("", null, null);
 				
 			}
 			
@@ -103,7 +96,6 @@ public class TaskCustomizer extends JPanel implements Customizer{
 					e1.printStackTrace();
 					System.out.println("Wrong priority value!");
 				}
-				support.firePropertyChange("", null, null);				
 			}
 		});
 		
@@ -113,7 +105,6 @@ public class TaskCustomizer extends JPanel implements Customizer{
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				task.setBgColor(colorChooser.getColor());
-				support.firePropertyChange("", null, null);
 			}
 		});
 		add(colorChooser);

@@ -58,7 +58,7 @@ public class Task extends JPanel implements Serializable {
 		this.setBackground(bgColor);
 		super.paintComponent(g);
 		g.setColor(Color.black);
-		g.drawString(title + " | Task priority: " + priority, 100, 100);
+		g.drawString(title + " | Task priority: " + priority, 10, 10);
 	}
 	
 	private VetoableChangeSupport vetoableChangeSupport = new VetoableChangeSupport(this);
