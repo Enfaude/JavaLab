@@ -10,7 +10,7 @@ import pwr.common.IServerRegister;
 import pwr.common.ServerObject;
 
 public class ServerRegisterImpl extends UnicastRemoteObject implements IServerRegister, IClientRegister{
-	
+
 	/**
 	 * 
 	 */
@@ -37,7 +37,7 @@ public class ServerRegisterImpl extends UnicastRemoteObject implements IServerRe
 			return false;
 		} else {
 			activeServers.add(server);
-			System.out.println(server.getName() + " registered successfully");
+			System.out.println(server.getName() + " registered successfully on port " + server.getPort());
 			return true;
 		}
 	}
@@ -47,7 +47,7 @@ public class ServerRegisterImpl extends UnicastRemoteObject implements IServerRe
 		System.out.println("Registry attempting to unregister " + server.getName());
 		if (activeServers.contains(server)) {
 			activeServers.remove(server);
-			System.out.println(server.getName() + " unregistered successfully");
+			System.out.println(server.getName() + " unregistered successfully from port " + server.getPort());
 			return true;
 		} else {
 			System.out.println("There is no " + server.getName() + " in registry");

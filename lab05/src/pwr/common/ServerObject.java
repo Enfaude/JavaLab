@@ -3,10 +3,11 @@ package pwr.common;
 import java.io.Serializable;
 
 public class ServerObject implements Serializable{
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1111266648636550671L;
+	private static final long serialVersionUID = 2202648449147859423L;
 	String name;
 	int port;
 	String description;
@@ -34,4 +35,24 @@ public class ServerObject implements Serializable{
 	public String getServerIp() {
 		return serverIp;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+            return true;
+        }
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        ServerObject object = (ServerObject) obj;
+        return port == object.getPort()
+                && (name == object.getName() 
+                     || (name != null && name.equals(object.getName())))
+                && (serverIp == object.getServerIp()
+                     || (serverIp != null && serverIp.equals(object.getServerIp())));
+    
+	}
+	
+	
 }

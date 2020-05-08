@@ -10,12 +10,12 @@ import pwr.common.IServerRegister;
 public class ServerRegister{
 	
 	int port = 8888;
+	int maxTries = 10;
 	
 	public ServerRegister() {
-		int maxTries = 10;
 		int tryCount = 0;
 		System.out.println("Creating new solving server registry");		
-		while(true) {
+		while(tryCount < maxTries) {
 			try {
 				IServerRegister serverRegister = new ServerRegisterImpl();
 				Registry registry = LocateRegistry.createRegistry(port);
@@ -23,15 +23,11 @@ public class ServerRegister{
 				System.out.println("Registry server successfully opened on port " + port);
 				break;
 			} catch (RemoteException e) {
-				if (tryCount < maxTries) {
-					tryCount++;
-					System.out.println("Port " + port + " is already bound, retrying with " + --port);	
-				} else {
-					e.printStackTrace();
-					break;
-				}
+				tryCount++;
+				System.out.println("Port " + port + " is already bound, retrying with " + --port);	
 			} catch (AlreadyBoundException e) {
 				e.printStackTrace();
+				break;
 			}
 		}
 	}
