@@ -19,7 +19,6 @@ public class ServerRegisterImpl extends UnicastRemoteObject implements IServerRe
 	
 	protected ServerRegisterImpl() throws RemoteException {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	@Override

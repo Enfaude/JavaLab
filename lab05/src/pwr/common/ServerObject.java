@@ -7,16 +7,14 @@ public class ServerObject implements Serializable{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 2202648449147859423L;
+	private static final long serialVersionUID = 6746842704406515962L;
 	String name;
 	int port;
-	String description;
 	String serverIp;
 	
-	public ServerObject(String newName, int newPort, String newDescription) {
+	public ServerObject(String newName, int newPort) {
 		this.name = newName;
 		this.port = newPort;
-		this.description = newDescription;
 		this.serverIp = "localhost";
 	}
 	
@@ -26,10 +24,6 @@ public class ServerObject implements Serializable{
 	
 	public int getPort() {
 		return port;
-	}
-	
-	public String getDescription() {
-		return description;
 	}
 	
 	public String getServerIp() {
@@ -51,8 +45,6 @@ public class ServerObject implements Serializable{
                      || (name != null && name.equals(object.getName())))
                 && (serverIp == object.getServerIp()
                      || (serverIp != null && serverIp.equals(object.getServerIp())));
-    
 	}
-	
 	
 }

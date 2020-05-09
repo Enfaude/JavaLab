@@ -1,6 +1,8 @@
 package pwr.client;
 
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -20,12 +22,11 @@ import javax.swing.JTextField;
 import pwr.common.IClientRegister;
 import pwr.common.ISorting;
 import pwr.common.ServerObject;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class SolverClient {	
 	static int baseRegistryPort = 8888;
-	static int maxTries = 1;
+	static int maxTries = 3;
+	static String registryName = "ServerRegistryService";
 	static List<Integer> inputList = new ArrayList<>();
 	static List<Integer> resultList = new ArrayList<>();
 	static List<ServerObject> activeServerList = new ArrayList<>();
@@ -38,19 +39,19 @@ public class SolverClient {
 		int registryPort = baseRegistryPort;
 		while(tryCount < maxTries) {
 			try {
-				Registry serverRegistryService = LocateRegistry.getRegistry("localhost", 8888);
-				IClientRegister serverRegister = (IClientRegister) serverRegistryService.lookup("ServerRegistryService");
+				Registry serverRegistryService = LocateRegistry.getRegistry("localhost", registryPort);
+				IClientRegister serverRegister = (IClientRegister) serverRegistryService.lookup(registryName);
 				activeServerList = serverRegister.getServers();
-				System.out.println("App have retrieved the server registry");				
+				System.out.println("App have retrieved the server registry from port " + registryPort);				
 				break;
 			} catch (RemoteException e) {
 				tryCount++;
 				System.out.println("Registry port " + registryPort + " is unavailable");	
 				registryPort--;
 			} catch (NotBoundException e) {
-				System.out.println("App could not find the server registry");
-				e.printStackTrace();
-				break;
+				tryCount++;
+				System.out.println("App could not find the server registry on port " + registryPort);
+				registryPort--;
 			}
 		}
 		if (tryCount == maxTries) {
@@ -104,8 +105,7 @@ public class SolverClient {
 			result = sorter.solve(inputList);
 			System.out.println("Data has been sorted successfully");
 		} catch (NotBoundException | RemoteException e) {
-			System.out.println("Could not get data sorted");
-			e.printStackTrace();
+			System.out.println("Could not get data sorted, check if server list is up-to-date");
 		}
     	return result;
     }
@@ -187,7 +187,11 @@ public class SolverClient {
 		JButton btnSort = new JButton("Sort");
 		btnSort.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				resultList = sortData(listServers.getSelectedIndex());
+				if (listServers.getSelectedIndex() >= 0) {
+					resultList = sortData(listServers.getSelectedIndex());
+				} else {
+					System.out.println("Select server from the list");
+				}
 			}
 		});
 		btnSort.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -203,18 +207,7 @@ public class SolverClient {
 		});
 		btnRefreshServers.setBounds(421, 7, 89, 23);
 		mainFrame.getContentPane().add(btnRefreshServers);
-		
-
-		if (!activeServerList.isEmpty()) {
-			System.out.println("Client found servers: ");
-			for (ServerObject server : activeServerList) {
-				System.out.println(server.getName() + " operating on port " + server.getPort());
 				
-			}
-		} else {
-			System.out.println("Client found no servers");
-		}
-		
 		mainFrame.setVisible(true);
 	}
 }
