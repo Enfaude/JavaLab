@@ -21,6 +21,8 @@ public class PigeonholeSort extends UnicastRemoteObject implements ISorting {
 
 	@Override
 	public List<Integer> solve(List<Integer> input) throws RemoteException {
+		System.out.println("Pigeonhole sort starts to sort list of " + input.size() + " numbers");
+
         List<Integer> result = new ArrayList<>();
         int minIndex = getMinValue(input);
         int maxIndex = getMaxValue(input);
@@ -36,6 +38,7 @@ public class PigeonholeSort extends UnicastRemoteObject implements ISorting {
             result.addAll(list); 
         }
 
+		System.out.println("Pigeonhole sort finished sorting " + input.size() + " numbers");
         return result;
 	}
 	

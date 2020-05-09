@@ -21,6 +21,8 @@ public class SelectionSort extends UnicastRemoteObject implements ISorting {
 
 	@Override
 	public List<Integer> solve(List<Integer> input) throws RemoteException {
+		System.out.println("Selection sort starts to sort list of " + input.size() + " numbers");
+		
 		List<Integer> result = new ArrayList<>();
 		Integer[] inputData = input.toArray(new Integer[input.size()]);
 
@@ -35,6 +37,7 @@ public class SelectionSort extends UnicastRemoteObject implements ISorting {
         }
 
         Collections.addAll(result, inputData);
+		System.out.println("Selection sort finished sorting " + input.size() + " numbers");
         return result;
 	}
 	

@@ -21,11 +21,14 @@ public class QuickSort extends UnicastRemoteObject implements ISorting {
 
 	@Override
 	public List<Integer> solve(List<Integer> input) throws RemoteException {
+		System.out.println("Quick sort starts to sort list of " + input.size() + " numbers");
+
         List<Integer> result = new ArrayList<>();
         Integer[] inputData = input.toArray(new Integer[input.size()]);
         quicksort(inputData, 0, inputData.length - 1);
 
         Collections.addAll(result, inputData);
+		System.out.println("Quick sort finished sorting " + input.size() + " numbers");
         return result;
 	}
 	
