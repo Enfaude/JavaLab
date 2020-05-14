@@ -1,13 +1,20 @@
 package pwr.java;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "transaction")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Transaction {
+	
 	public int id;
 	public int client;
 	public int bill;
 	
 	public Transaction() {
 		
-	}
+	}		
 	
 	public Transaction(int newId, int newClient, int newBill) {
 		this.id = newId;
@@ -38,4 +45,11 @@ public class Transaction {
 	public void setBill(int bill) {
 		this.bill = bill;
 	}
+	
+	@Override
+ 	public String toString() {
+ 		return "Transaction info: id = " + id 
+ 				+ ", clientId = " + client 
+ 				+ ", bill = " + bill;
+ 	}
 }

@@ -5,24 +5,25 @@ import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
-
-import java.sql.ResultSetMetaData;
 
 
 public class App {
 	static Connection conn;
 	static String selectClientsSQL = "select * from MySQL80Lab06.clients";
 	static String selectTransactionsSQL = "select * from MySQL80Lab06.transactions";
+	static String selectTransactionByIdSQL = "select * from MySQL80Lab06.transactions where id = ?";
 	static String updateClientNameSQL = "update MySQL80Lab06.clients set name = ? where id = ?";
 	static String updateClientPhoneSQL = "update MySQL80Lab06.clients set phone = ? where id = ?";
 	static String updateTransactionClientSQL = "update MySQL80Lab06.transactions set client = ? where id = ?";
 	static String updateTransactionBillSQL = "update MySQL80Lab06.transactions set bill = ? where id = ?";
 	static String selectTransactionsWithClientsDataSQL = "select t.id, c.name, t. bill, c.phone from MySQL80Lab06.transactions t join MySQL80Lab06.clients c on t.client = c.id";
-	static String insertTransactionSQL = "INSERT INTO `mysql80lab06`.`transactions` (`id`, `client`, `bill`) VALUES ('0', ?, ?);";
+	static String insertTransactionSQL = "INSERT INTO `mysql80lab06`.`transactions` (`id`, `client`, `bill`) VALUES (?, ?, ?);";
 	static String insertClientSQL = "INSERT INTO `mysql80lab06`.`clients` (`id`, `name`, `phone`) VALUES ('0', ?, ?);" ;
 	
 
@@ -33,7 +34,6 @@ public class App {
 			String password = "root";
 			conn = DriverManager.getConnection(url, user, password);  
 			System.out.println("Connected!");
-
 			menu();
 	    } catch (SQLException ex) {
 	        System.out.println("SQLException: " + ex.getMessage());
@@ -50,10 +50,19 @@ public class App {
 				System.out.println("2. View combined data");
 				System.out.println("3. Add new record");
 				System.out.println("4. Select and update record");
+				System.out.println("5. Export selected transaction to XML file");
+				System.out.println("6. Import transaction from XML file");
+				System.out.println("7. Export all transactions to XML file");
+				System.out.println("8. Import multiple transactions from XML file");
 				System.out.println("0. Close application");
 				
 				String table = "";
 				Scanner sc = new Scanner(System.in);
+				ResultSet rs = null;
+				TransactionManager tm = new TransactionManager();
+				List<Transaction> list = null;
+				TransactionsList trList = null;
+				Transaction transaction = null;
 				int choice = forceIntegerInput();
 				switch (choice) {
 					case 1: 
@@ -61,10 +70,14 @@ public class App {
 						System.out.println("Which table do you want to view?");
 						table = sc.nextLine();
 						table = table.trim();
-						selectData(table);
+						rs = selectData(table);
+						printColumnNames(rs);
+						printResult(rs);
 						break;
 					case 2: 
-						selectView();
+						rs = selectView();
+						printColumnNames(rs);
+						printResult(rs);
 						break;
 					case 3: 
 						printTableNames();
@@ -79,6 +92,35 @@ public class App {
 						table = sc.nextLine();
 						table = table.trim();
 						updateData(table);
+						break;
+					case 5:
+						System.out.println("Enter id of exported transaction");
+						int trid = sc.nextInt();
+						transaction = selectTransaction(trid);
+						tm.marshallTransaction(transaction);
+						break;
+					case 6:
+						transaction = tm.unmarshallTransaction();
+						insertTransaction(transaction);
+						break;	
+					case 7:
+						rs = selectData("transactions");
+						list = tm.getTransactions(rs);
+						trList = new TransactionsList();
+						trList.setTransationsList(list);
+						tm.marshallTransactions(trList);
+						break;
+					case 8:
+						trList = tm.unmarshallTransactions();
+						if (trList != null) {
+							list = trList.getTransactionsList();
+							int c = 0;
+							for (Transaction tr : list) {
+								insertTransaction(tr);
+								c++;
+							}
+							System.out.println("Successfully imported " + c + " transactions");
+						}
 						break;
 					case 0:
 						System.out.println("Closing application");
@@ -100,7 +142,7 @@ public class App {
         } 
 	}
 	
-	static void selectData(String table) throws SQLException{
+	static ResultSet selectData(String table) throws SQLException{
 		Statement stmt = conn.createStatement();		
 		ResultSet rs = null;
 		if (table.toLowerCase().equals("transactions")) {
@@ -110,14 +152,12 @@ public class App {
 		} else {
 	        System.out.println("There is no such table");
 		}
-		printColumnNames(rs);
-		printResult(rs);
+		return rs;
 	}
 	
 	static void updateData(String table) throws SQLException {
 		Statement stmt = conn.createStatement();		
-		ResultSet rs = null;
-		
+		ResultSet rs = null;		
 		if (table.toLowerCase().equals("clients")) {
 			rs = stmt.executeQuery(selectClientsSQL);
 			printColumnNames(rs);
@@ -130,8 +170,7 @@ public class App {
 			updateTransaction();
 		} else {
 	        System.out.println("There is no such table");
-		}
-		 
+		}		 
 	}
 	
 	static boolean insertData(String table) throws SQLException {
@@ -267,17 +306,34 @@ public class App {
 	static void insertTransaction() throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement(insertTransactionSQL);
 		Scanner sc = new Scanner(System.in);
+		
+		//id will be set as next auto_increment in database
+		stmt.setInt(1, 0);
 
 		System.out.println("Enter transaction's client ID");
 		int client = sc.nextInt();
-		stmt.setInt(1, client);
+		stmt.setInt(2, client);
 		
 		System.out.println("Enter new transaction's bill");
-		int bill= sc.nextInt();
-		stmt.setInt(2, bill);
+		int bill = sc.nextInt();
+		stmt.setInt(3, bill);
 		
 		stmt.executeUpdate();
 		System.out.println("Data added successfully!");
+	}
+	
+	static void insertTransaction(Transaction transaction) throws SQLException {
+		if (transaction != null) {
+			PreparedStatement stmt = conn.prepareStatement(insertTransactionSQL);
+			stmt.setInt(1, transaction.getId());
+			stmt.setInt(2, transaction.getClient());
+			stmt.setInt(3, transaction.getBill());
+			
+			stmt.executeUpdate();
+			System.out.println("Data added successfully!");
+		} else {
+			System.out.println("Error! Selected transaction is a null object!");
+		}
 	}
 	
 	static int forceIntegerInput() {
@@ -293,11 +349,22 @@ public class App {
 		return value;
 	}
 	
-	static void selectView() throws SQLException {
+	static ResultSet selectView() throws SQLException {
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery(selectTransactionsWithClientsDataSQL);
-		printColumnNames(rs);
-		printResult(rs);
+		return rs;
 	}
+	
+	static Transaction selectTransaction(int id) throws SQLException {
+		Transaction transaction = null;
+		PreparedStatement stmt = conn.prepareStatement(selectTransactionByIdSQL);		
+		stmt.setInt(1, id);		
+		ResultSet rs = stmt.executeQuery();
+		if (rs.next()) {
+			transaction = new Transaction(rs.getInt(1), rs.getInt(2), rs.getInt(3));
+		}
+		return transaction;
+	}
+	
 
 }
