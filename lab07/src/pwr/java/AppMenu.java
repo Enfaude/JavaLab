@@ -29,16 +29,21 @@ public class AppMenu {
 			int choice = forceIntegerInput();
 			switch (choice) {
 				case 1: 					
-					send();
-					break;
+					try {
+						send();
+					} catch (SOAPException | IOException e1) {
+						System.out.println("An error occured, going back to menu");
+						menu();
+					}
+						break;
 				case 2: 					
-				try {
-					messenger.refreshInbox();
-				} catch (IOException | SOAPException e) {
-					System.out.println("An error occured, going back to menu");
-					menu();
-				}
-					break;
+					try {
+						messenger.refreshInbox();
+					} catch (IOException | SOAPException e) {
+						System.out.println("An error occured, going back to menu");
+						menu();
+					}
+						break;
 				case 3: 					
 					printInbox();
 					break;
@@ -62,10 +67,18 @@ public class AppMenu {
 		return value;
 	}
 	
-	public void send() {
+	public void send() throws SOAPException, IOException {
+		Message msg;
+		System.out.println("Enter the recipient(type 'all' to send a broadcast message)");
+		String recipient = sc.nextLine();
 		System.out.println("Enter the message:");
 		String text = sc.nextLine();
-		Message msg = new Message(text, appInfo.getNextNodeName(), appInfo.getName());
+		if (recipient.toLowerCase().equals("all")) {
+			msg = new Message(text, recipient, appInfo.getName(), true);
+			msg.addReachedNode(appInfo);
+		} else {
+			msg = new Message(text, recipient, appInfo.getName(), false);
+		}
 		messenger.sendMessage(msg);
 	}
 	
