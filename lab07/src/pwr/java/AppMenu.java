@@ -22,8 +22,7 @@ public class AppMenu {
 		while (true) {
 			System.out.println("Menu Application " + appInfo.getName());
 			System.out.println("1. Send message");
-			System.out.println("2. Refresh inbox");
-			System.out.println("3. View inbox");
+			System.out.println("2. View inbox");
 			System.out.println("0. Close application");
 			
 			int choice = forceIntegerInput();
@@ -37,14 +36,6 @@ public class AppMenu {
 					}
 						break;
 				case 2: 					
-					try {
-						messenger.refreshInbox();
-					} catch (IOException | SOAPException e) {
-						System.out.println("An error occured, going back to menu");
-						menu();
-					}
-						break;
-				case 3: 					
 					printInbox();
 					break;
 				case 0:

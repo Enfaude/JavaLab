@@ -1,11 +1,7 @@
 package pwr.java;
 
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -27,10 +23,21 @@ public class Messenger {
 	List<Message> inbox = new ArrayList<>();
 	ServerSocket inboxSocket;
 	Socket sendingSocket;
+	InboxThread inboxThread;
+	static final String UNICAST = "unicast";
+	static final String BROADCAST = "broadcast";
+	static final String RECIPIENT = "recipient";
+	static final String CAST_TYPE = "castType";
+	static final String SENDER = "sender";
+	static final String MESSAGE_TEXT = "message";
+	static final String REACHED_NODES = "reachedNodes";
+	
 	
 	public Messenger(AppInfo appInfo) {
 		this.appInfo = appInfo;
 		hostInbox();
+		inboxThread = new InboxThread(this);
+		inboxThread.start();
 	}
 
 	public boolean sendMessage(Message message) throws SOAPException, IOException {
@@ -40,31 +47,32 @@ public class Messenger {
 	
 	public boolean sendMessage(SOAPMessage soapMessage) throws SOAPException, IOException {
 		if (soapMessage != null) {
-			connectSender();
-			try {
-		        PrintStream out = new PrintStream(sendingSocket.getOutputStream(), true);
-				soapMessage.writeTo(out);
-				out.close();
-				return true;
-			} catch (IOException e) {
-				sendMessage(soapMessage);
-				e.printStackTrace();
-				throw e;
-			} catch (SOAPException e) {
-				e.printStackTrace();
-				throw e;
+			if (connectSender()) {
+				try {
+			        PrintStream out = new PrintStream(sendingSocket.getOutputStream(), true);
+					soapMessage.writeTo(out);
+					out.close();
+					return true;
+				} catch (IOException e) {
+					sendMessage(soapMessage);
+					e.printStackTrace();
+					throw e;
+				} catch (SOAPException e) {
+					e.printStackTrace();
+					throw e;
+				}
 			}
-		} else {
-			return false;
-		}
+		}			
+		return false;
+		
 	}
 
 	public void checkMessage(SOAPMessage soapMessage) throws SOAPException, IOException {
 		try {
 			SOAPHeader header = soapMessage.getSOAPHeader();
-			String recipient = header.getAttribute("recipient");
-			String castType = header.getAttribute("castType");
-			if (recipient.equals(appInfo.getName())) {
+			String recipient = header.getAttribute(RECIPIENT);
+			String castType = header.getAttribute(CAST_TYPE);
+			if (recipient.toLowerCase().equals(appInfo.getName().toLowerCase())) {
 				System.out.println("Received new message adressed to this client");
 				Message message = decodeSOAPMessage(soapMessage);
 				if (message != null) {
@@ -72,7 +80,7 @@ public class Messenger {
 					System.out.println("You have new message in inbox: ");
 					System.out.println(message);
 				}
-			} else if (castType.equals("broadcast")) {
+			} else if (castType.equals(BROADCAST)) {
 				Message message = decodeSOAPMessage(soapMessage);
 				if (message != null) {
 					message.addReachedNode(appInfo);
@@ -100,16 +108,16 @@ public class Messenger {
 		try {
 			Message msg;
 			SOAPHeader soapHeader = soapMessage.getSOAPHeader();
-			String recipient = soapHeader.getAttribute("recipient");
-			String sender = soapHeader.getAttribute("sender");
+			String recipient = soapHeader.getAttribute(RECIPIENT);
+			String sender = soapHeader.getAttribute(SENDER);
 			SOAPBody soapBody = soapMessage.getSOAPBody();
-			String msgText = soapBody.getAttribute("message");
-			String castType = soapHeader.getAttribute("castType");
-			if (castType.equals("unicast")) {
+			String msgText = soapBody.getAttribute(MESSAGE_TEXT);
+			String castType = soapHeader.getAttribute(CAST_TYPE);
+			if (castType.equals(UNICAST)) {
 				msg = new Message(msgText, recipient, sender, false);
 			} else {
 				Set<String> reachedNodes = new HashSet<>();
-				String nodes = soapHeader.getAttribute("reachedNodes");
+				String nodes = soapHeader.getAttribute(REACHED_NODES);
 				char[] nodesArray = nodes.toCharArray();
 				for (char c : nodesArray) {
 					String n = "" + c;
@@ -129,14 +137,14 @@ public class Messenger {
 			SOAPMessage soapMessage = MessageFactory.newInstance().createMessage();
 			SOAPFactory sf = SOAPFactory.newInstance();
 			SOAPHeader soapHeader = soapMessage.getSOAPHeader();
-			Name recipientName = sf.createName("recipient");
+			Name recipientName = sf.createName(RECIPIENT);
 			soapHeader.addAttribute(recipientName, message.getRecipient());
-			Name senderName = sf.createName("sender");
+			Name senderName = sf.createName(SENDER);
 			soapHeader.addAttribute(senderName, message.getSender());
-			Name castTypeName = sf.createName("castType");
+			Name castTypeName = sf.createName(CAST_TYPE);
 			if (message.isBroadcast()) {
-				soapHeader.addAttribute(castTypeName, "broadcast");
-				Name reachedNodesName = sf.createName("reachedNodes");
+				soapHeader.addAttribute(castTypeName, BROADCAST);
+				Name reachedNodesName = sf.createName(REACHED_NODES);
 				Set<String> reachedNodes = message.getReachedNodes();
 				String nodes = "";
 				for (String node : reachedNodes) {
@@ -144,10 +152,10 @@ public class Messenger {
 				}
 				soapHeader.addAttribute(reachedNodesName, nodes);
 			} else {
-				soapHeader.addAttribute(castTypeName, "unicast");
+				soapHeader.addAttribute(castTypeName, UNICAST);
 			}
 			SOAPBody soapBody = soapMessage.getSOAPBody();
-			Name bodyName = sf.createName("message");
+			Name bodyName = sf.createName(MESSAGE_TEXT);
 			soapBody.addAttribute(bodyName, message.getText());
 
 			return soapMessage;
@@ -157,11 +165,13 @@ public class Messenger {
 		}
 	}
 	
-	public void connectSender() {
+	public boolean connectSender() {
 		try {
 			sendingSocket = new Socket("localhost", appInfo.getNextNodePort());
+			return true;
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Next node is unavailable");		
+			return false;
 		}
 	}
 	
@@ -172,28 +182,13 @@ public class Messenger {
 			e.printStackTrace();
 		}
 	}
-	
-	public SOAPMessage refreshInbox() throws IOException, SOAPException {
-		Socket inputSocket;
-		System.out.println("Refreshing inbox...");
-		try {
-			inputSocket = inboxSocket.accept();
-			BufferedReader in = new BufferedReader(new InputStreamReader(inputSocket.getInputStream()));
-			String input = in.readLine();
-			InputStream is = new ByteArrayInputStream(input.getBytes());
-			SOAPMessage msg = MessageFactory.newInstance().createMessage(null, is);
-			checkMessage(msg);
-			System.out.println("...refreshed successfully");
-			return msg;
-		} catch (IOException | SOAPException e) {
-			System.out.println("...it failed!");
-			e.printStackTrace();
-			throw e;
-		}		
-	}
-	
+		
 	public List<Message> getInbox() {
 		return inbox;
+	}
+	
+	public void addIncomingMessage(Message msg) {
+		inbox.add(msg);
 	}
 
 }

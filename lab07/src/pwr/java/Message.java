@@ -62,7 +62,7 @@ public class Message {
 
 	@Override
 	public String toString() {
-		return "Message [from=" + sender + ", to=" + recipient + ", text=" + text + "]";
+		return "Message [from=" + sender + ", to=" + recipient + ", text='" + text + "']";
 	}
 
 	public boolean isBroadcast() {
