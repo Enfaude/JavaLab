@@ -1,4 +1,4 @@
-package pwr.java;
+package pwr.lab;
 
 import java.io.File;
 import java.io.FileInputStream;

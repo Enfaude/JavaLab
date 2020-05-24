@@ -1,0 +1,12 @@
+/* AUTOMATICALLY GENERATED ON Sun May 24 21:11:36 CEST 2020*/
+/* DO NOT EDIT */
+
+keystore "file:/D:/IntelliJWorkspace/lab08/lab08keystore.jks", "jks";
+
+keystorePasswordURL "file:/D:/IntelliJWorkspace/lab08/keystorepassword";
+
+grant signedBy "adammaciak",  codeBase "file::/D:/" {
+  permission java.security.AllPermission, signedBy "adammaciak";
+  permission java.lang.RuntimePermission "getClassLoader", signedBy "adammaciak";
+};
+
