@@ -1,0 +1,5 @@
+compile
+g++.exe -c -I%JavaInclude% -I%JavaWinInclude% pwr_mnk_CppPlayer.cpp -o pwr_mnk_CppPlayer.o
+
+link
+g++ -static -shared -o native.dll pwr_mnk_CppPlayer.o -Wl,--add-stdcall-alias

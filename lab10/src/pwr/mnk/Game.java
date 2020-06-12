@@ -5,12 +5,11 @@ public class Game {
 	public final static char ONE = '1';
 	public final static char TWO = '2';
 	
-	public char[][] board;
+	public static char[][] board = new char[5][5];
 	boolean isOver;
 	int turnCounter = 0;
 	
 	public Game() {
-		board = new char[5][5];
 		clearBoard();
 		isOver = false;
 	}
@@ -34,14 +33,16 @@ public class Game {
 		}
 	}
 	
-	public void play() {
-		while (!isOver) {
-			playerTurn();
-			if (isOver) {
-				break;
-			}
-			cpuTurn();
+	public boolean playTurn() {
+		playerTurn();
+		if (isOver == true) {
+			return true;
 		}
+		cpuTurn();
+		if (isOver == true) {
+			return true;
+		}
+		return false;
 	}
 	
 	public void playerTurn() {
@@ -59,23 +60,28 @@ public class Game {
 	}
 	
 	public void cpuTurn() {
-		//TODO call script via nashor or JNI (placeholder 2nd human player)
-		printBoard();
-		System.out.println("Enter row");
-		int row = GameApp.forceIntegerInput();
-		System.out.println("Enter column");
-		int col = GameApp.forceIntegerInput();
-		if(isMoveValid(row, col)) {
-			makeMove(row, col, TWO);
+		int[] cpuMove = ComputerPlayer.playTurn(board);
+		
+		if(isMoveValid(cpuMove)) {
+			makeMove(cpuMove, TWO);
 		} else {
 			System.out.println("Suggested move is invalid, try again");
 			cpuTurn();
 		}
 	}
 	
-	boolean isMoveValid(int row, int col) {
+	static boolean isMoveValid(int row, int col) {
 		try {
 			return board[col][row] == ZERO;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			System.out.println("Entered coordinates are out of bound");
+			return false;
+		}
+	}
+	
+	static boolean isMoveValid(int[] coords) {
+		try {
+			return board[coords[1]][coords[0]] == ZERO;
 		} catch (ArrayIndexOutOfBoundsException e) {
 			System.out.println("Entered coordinates are out of bound");
 			return false;
@@ -86,6 +92,16 @@ public class Game {
 		board[col][row] = player;
 		turnCounter++;
 		isGameOver(row, col, player);
+		//if no player wins in the last turn, game concludes with a draw
+		if (turnCounter == 25) {
+			finish(ZERO);
+		}
+	}
+	
+	public void makeMove(int[] coords, char player) {
+		board[coords[1]][coords[0]] = player;
+		turnCounter++;
+		isGameOver(coords[0], coords[1], player);
 		//if no player wins in the last turn, game concludes with a draw
 		if (turnCounter == 25) {
 			finish(ZERO);
