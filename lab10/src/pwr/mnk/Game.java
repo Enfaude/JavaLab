@@ -8,6 +8,7 @@ public class Game {
 	public static char[][] board = new char[5][5];
 	boolean isOver;
 	int turnCounter = 0;
+	Character winner = null;
 	
 	public Game() {
 		clearBoard();
@@ -47,32 +48,32 @@ public class Game {
 	
 	public void playerTurn() {
 		printBoard();
-		System.out.println("Enter row");
-		int row = GameApp.forceIntegerInput();
-		System.out.println("Enter column");
-		int col = GameApp.forceIntegerInput();
-		if(isMoveValid(row, col)) {
-			makeMove(row, col, ONE);
-		} else {
-			System.out.println("Suggested move is invalid, try again");
-			playerTurn();
-		}
+		int row, col;		
+		do {
+			System.out.println("Enter row");
+			row = GameApp.forceIntegerInput();
+			System.out.println("Enter column");
+			col = GameApp.forceIntegerInput();
+		} while(!isMoveValid(row, col));
+		makeMove(row, col, ONE);
 	}
 	
 	public void cpuTurn() {
-		int[] cpuMove = ComputerPlayer.playTurn(board);
-		
-		if(isMoveValid(cpuMove)) {
-			makeMove(cpuMove, TWO);
-		} else {
-			System.out.println("Suggested move is invalid, try again");
-			cpuTurn();
-		}
+		int[] cpuMove = new int[2];
+		do {
+			cpuMove = ComputerPlayer.playTurn(board);
+		} while(!isMoveValid(cpuMove));
+		makeMove(cpuMove, TWO);
 	}
 	
 	static boolean isMoveValid(int row, int col) {
 		try {
-			return board[col][row] == ZERO;
+			if (board[col][row] == ZERO) {
+				return true;				
+			} else {
+				System.out.println("Chosen field is already filled, choose another field.");
+				return false;
+			}
 		} catch (ArrayIndexOutOfBoundsException e) {
 			System.out.println("Entered coordinates are out of bound");
 			return false;
@@ -81,7 +82,12 @@ public class Game {
 	
 	static boolean isMoveValid(int[] coords) {
 		try {
-			return board[coords[1]][coords[0]] == ZERO;
+			if (board[coords[1]][coords[0]] == ZERO) {
+				return true;				
+			} else {
+				System.out.println("Chosen field is already filled, choose another field.");
+				return false;				
+			}
 		} catch (ArrayIndexOutOfBoundsException e) {
 			System.out.println("Entered coordinates are out of bound");
 			return false;
@@ -103,7 +109,7 @@ public class Game {
 		turnCounter++;
 		isGameOver(coords[0], coords[1], player);
 		//if no player wins in the last turn, game concludes with a draw
-		if (turnCounter == 25) {
+		if (turnCounter == 25 && winner == null) {
 			finish(ZERO);
 		}
 	}
@@ -113,12 +119,14 @@ public class Game {
 	}
 	
 	public void finish(char player) {
+		System.out.println("The game has finished");
 		isOver = true;
 		printBoard();
 		if (player == '0') {
 			System.out.println("Game concluded with a draw.");
 		} else {
 			System.out.println("Player " + player + " wins.");
+			winner = player;
 		}
 	}
 	
@@ -149,7 +157,7 @@ public class Game {
 				count = 0;
 			}
 		}
-		//check '\' diagonal
+		//check main '\' diagonal
 		if (row == col) {
 			count = 0;
 			for (int i = 0; i < 5; i++) {
@@ -164,7 +172,7 @@ public class Game {
 				}
 			}
 		}			
-		//check '/' diagonal
+		//check main '/' diagonal
 		if (row + col == 4) { 
 			count = 0;
 			for (int i = 0; i < 5; i++) {
@@ -239,8 +247,7 @@ public class Game {
 				finish(player);
 				return true;
 			}
-		}
-		
+		}		
 		return false;
 	}
 		

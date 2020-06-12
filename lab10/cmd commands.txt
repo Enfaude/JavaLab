@@ -3,3 +3,7 @@ g++.exe -c -I%JavaInclude% -I%JavaWinInclude% pwr_mnk_CppPlayer.cpp -o pwr_mnk_C
 
 link
 g++ -static -shared -o native.dll pwr_mnk_CppPlayer.o -Wl,--add-stdcall-alias
+
+cd /d D:\IntelliJWorkspace\lab10\src\pwr\mnk
+
+javac -h . CppPlayer

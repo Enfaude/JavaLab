@@ -34,7 +34,7 @@ public class GameApp {
 		}
 	}
 	
-	public static void gameMenu() {		
+	public static boolean gameMenu() {		
 		Game game = new Game();
 		ComputerPlayer.scanAlgs();
 		ComputerPlayer.selectAlg();	
@@ -50,9 +50,13 @@ public class GameApp {
 			int choice = forceIntegerInput(); 
 			switch (choice) {
 				case 1:					
-					game.playTurn();
+					if(game.playTurn()) {
+						return true;
+					}
 					break;
-				case 2: 	
+				case 2:
+					ComputerPlayer.scanAlgs();
+					ComputerPlayer.selectAlg();
 					break;
 				case 3:
 					game.printBoard();
@@ -68,14 +72,17 @@ public class GameApp {
 		}
 	}
 	
-	public static int forceIntegerInput() {
-		int value;
-		try { 
-			value = sc.nextInt();
-			sc.nextLine();
-		} catch (InputMismatchException e) {
-			System.out.println("Please enter correct numeric value");
-			value = forceIntegerInput();
+	public static Integer forceIntegerInput() {
+		Integer value = null;
+		boolean correct = false;
+		while(!correct) {
+			try { 
+				value = sc.nextInt();
+				correct = true;
+			} catch (InputMismatchException e) {
+				System.out.println("Please enter correct numeric value");
+				sc.nextLine();
+			}
 		}
 		return value;
 	}
